@@ -27,6 +27,7 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       const user = await User.find({ google_id: profile.id });
+      console.log(user);
       if (user.length === 0) {
         const newUser = new User({
           username: profile.displayName,
@@ -66,6 +67,7 @@ router.get(
 );
 
 router.get("/login/success", (req, res) => {
+  console.log(req.user);
   res.json(req.user);
 });
 
