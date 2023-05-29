@@ -8,6 +8,9 @@ const shoesRouter = require("./routes/getShoes");
 const authentication = require("./routes/authentication");
 
 app.use(express.json());
+mongoose.connect(
+  `mongodb+srv://sammitbadodekar:${process.env.MONGO_KEY}@cluster0.rnwqbdp.mongodb.net/RunAwaySoles?retryWrites=true&w=majority`
+);
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -29,7 +32,6 @@ app.listen(port, () => {
   console.log(`server is running on port ${port}`);
 });
 
-mongoose.connect(process.env.MONGO_KEY);
 app.get("/getUsers", (req, res) => {
   UserModel.find()
     .then((result) => {
