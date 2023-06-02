@@ -16,8 +16,6 @@ router.use(
 router.use(passport.initialize());
 router.use(passport.session());
 
-let userGoogleId = "";
-
 passport.use(
   new GoogleStrategy(
     {
@@ -27,7 +25,7 @@ passport.use(
     },
     async function (accessToken, refreshToken, profile, done) {
       const user = await User.find({ google_id: profile.id });
-      console.log(user);
+
       if (user.length === 0) {
         const newUser = new User({
           username: profile.displayName,
@@ -35,12 +33,9 @@ passport.use(
           google_id: profile.id,
           imageUrl: profile.photos[0].value,
         });
-
-        userGoogleId = profile.id;
         await newUser.save();
         return done(null, user);
       } else {
-        userGoogleId = user[0].google_id;
         return done(null, user);
       }
     }
@@ -67,7 +62,6 @@ router.get(
 );
 
 router.get("/login/success", (req, res) => {
-  console.log(req.user);
   res.json(req.user);
 });
 

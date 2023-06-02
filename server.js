@@ -3,9 +3,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 const mongoose = require("mongoose");
 const UserModel = require("./models/users");
+const ShoesDataModel = require("./models/shoesData");
 const cors = require("cors");
 const shoesRouter = require("./routes/getShoes");
 const authentication = require("./routes/authentication");
+const { session } = require("passport");
+const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 app.use(express.json());
 mongoose.connect(
@@ -24,12 +27,41 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
 });
-
 app.use("/getShoes", shoesRouter);
 app.use("/auth", authentication);
-
 app.listen(port, () => {
   console.log(`server is running on port ${port}`);
+});
+
+app.post("/create-checkout-session", async (req, res) => {
+  const lineItems = await Promise.all(
+    req.body.map(async (item) => {
+      return {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: item.name,
+            images: [item.img],
+          },
+          unit_amount: item.price * 100,
+        },
+        quantity: 1,
+      };
+    })
+  );
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      mode: "payment",
+      line_items: lineItems,
+      success_url: `${process.env.FRONTEND_URL}/success`,
+      cancel_url: `${process.env.FRONTEND_URL}/cart`,
+    });
+    res.json({ url: session.url });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+    console.log(e.message);
+  }
 });
 
 app.get("/getUsers", (req, res) => {
@@ -52,6 +84,16 @@ app.get("/users/:id/cartItems", (req, res) => {
       res.send(error);
     });
 });
+app.get("/users/:id/orders", (req, res) => {
+  const userId = req.params.id;
+  UserModel.find({ _id: userId }, "orders")
+    .then((result) => {
+      res.send(result);
+    })
+    .catch((error) => {
+      res.send(error);
+    });
+});
 
 app.put("/users/:id/updateCartItems", async (req, res) => {
   const updatedCart = req.body;
@@ -59,6 +101,17 @@ app.put("/users/:id/updateCartItems", async (req, res) => {
 
   const filter = { _id: userId };
   const update = { $set: { cart: updatedCart } };
+
+  await UserModel.updateOne(filter, update);
+
+  res.send(userId);
+});
+app.put("/users/:id/updateOrders", async (req, res) => {
+  const updatedOrders = req.body;
+  const userId = req.params.id;
+
+  const filter = { _id: userId };
+  const update = { $set: { orders: updatedOrders } };
 
   await UserModel.updateOne(filter, update);
 

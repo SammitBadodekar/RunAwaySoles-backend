@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const ShoesDataModel = require("../models/shoesData");
 
 const useRandom = () => {
-  return Math.floor(Math.random() * 20);
+  return Math.floor(Math.random() * 22);
 };
 
 router.use(express.json());
@@ -23,28 +23,6 @@ router.get("/allShoes", (req, res) => {
     });
 });
 
-router.get("/lt", (req, res) => {
-  ShoesDataModel.aggregate([
-    {
-      $addFields: {
-        price: {
-          $toInt: "$price",
-        },
-      },
-    },
-    {
-      $match: {
-        price: { $lt: 100 },
-      },
-    },
-  ])
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((error) => {
-      res.send(error);
-    });
-});
 router.get("/specific/:id", (req, res) => {
   const whichShoesToFetch = req.params.id;
   ShoesDataModel.find({ _id: `${whichShoesToFetch}` })

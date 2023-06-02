@@ -10,6 +10,9 @@ const UserSchema = new mongoose.Schema({
   cart: {
     type: Array,
   },
+  orders: {
+    type: Array,
+  },
   email: {
     type: String,
   },
