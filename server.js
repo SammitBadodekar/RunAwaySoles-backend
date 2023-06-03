@@ -16,13 +16,16 @@ mongoose.connect(
 );
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: "https://run-away-soles.vercel.app",
     methods: "GET,PUT,POST,DELETE",
     credentials: true,
   })
 );
 app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL);
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://run-away-soles.vercel.app"
+  );
   res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   next();
@@ -54,8 +57,8 @@ app.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       mode: "payment",
       line_items: lineItems,
-      success_url: `${process.env.FRONTEND_URL}/success`,
-      cancel_url: `${process.env.FRONTEND_URL}/cart`,
+      success_url: `${"https://run-away-soles.vercel.app/success"}`,
+      cancel_url: `${"https://run-away-soles.vercel.app/cart"}`,
     });
     res.json({ url: session.url });
   } catch (e) {
