@@ -57,8 +57,8 @@ app.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       mode: "payment",
       line_items: lineItems,
-      success_url: `${"https://run-away-soles.vercel.app/success"}`,
-      cancel_url: `${"https://run-away-soles.vercel.app/cart"}`,
+      success_url: `${"https://run-away-soles-backend.vercel.app/success"}`,
+      cancel_url: `${"https://run-away-soles-backend.vercel.app/cart"}`,
     });
     res.json({ url: session.url });
   } catch (e) {
@@ -79,7 +79,7 @@ app.get("/getUsers", (req, res) => {
 
 app.get("/users/:id/cartItems", (req, res) => {
   const userId = req.params.id;
-  UserModel.find({ _id: userId }, "cart")
+  UserModel.find({ uid: userId }, "cart")
     .then((result) => {
       res.send(result);
     })
@@ -89,7 +89,7 @@ app.get("/users/:id/cartItems", (req, res) => {
 });
 app.get("/users/:id/orders", (req, res) => {
   const userId = req.params.id;
-  UserModel.find({ _id: userId }, "orders")
+  UserModel.find({ uid: userId }, "orders")
     .then((result) => {
       res.send(result);
     })
@@ -102,7 +102,7 @@ app.put("/users/:id/updateCartItems", async (req, res) => {
   const updatedCart = req.body;
   const userId = req.params.id;
 
-  const filter = { _id: userId };
+  const filter = { uid: userId };
   const update = { $set: { cart: updatedCart } };
 
   await UserModel.updateOne(filter, update);
@@ -113,7 +113,7 @@ app.put("/users/:id/updateOrders", async (req, res) => {
   const updatedOrders = req.body;
   const userId = req.params.id;
 
-  const filter = { _id: userId };
+  const filter = { uid: userId };
   const update = { $set: { orders: updatedOrders } };
 
   await UserModel.updateOne(filter, update);

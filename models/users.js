@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
   },
-  google_id: {
+  uid: {
     type: String,
   },
 });
