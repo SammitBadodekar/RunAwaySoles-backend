@@ -57,8 +57,8 @@ app.post("/create-checkout-session", async (req, res) => {
       payment_method_types: ["card"],
       mode: "payment",
       line_items: lineItems,
-      success_url: `${"https://run-away-soles-backend.vercel.app/success"}`,
-      cancel_url: `${"https://run-away-soles-backend.vercel.app/cart"}`,
+      success_url: `${"https://run-away-soles.vercel.app/success"}`,
+      cancel_url: `${"https://run-away-soles.vercel.app/cart"}`,
     });
     res.json({ url: session.url });
   } catch (e) {
