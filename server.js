@@ -128,24 +128,24 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-app.get("/:id/ordersuccess", async (req, res) => {
-  const userId = req.params.id;
-  console.log(userId);
-  if (userId) {
-    const user = await UserModel.find({ uid: userId });
-    const options = {
-      from: "run-away-soles@outlook.com",
-      to: `${user.email}`,
-      subject: "Order Successful",
-      text: `Haha , you thought you will get real shoes LOL!!!`,
-    };
-    transporter.sendMail(options, (error, res) => {
-      if (error) {
-        console.log(error);
+app.get("/:email/ordersuccess", async (req, res) => {
+  const email = req.params.email;
+  if (email) {
+    transporter.sendMail(
+      {
+        from: "run-away-soles@outlook.com",
+        to: `${email}`,
+        subject: "Order Successful",
+        text: `Haha , you thought you will get real shoes LOL!!!`,
+      },
+      (error, res) => {
+        if (error) {
+          console.log(error);
+        }
+        console.log("sent mail");
+        res.send("sent mail");
       }
-      console.log("sent mail");
-      res.send(userId);
-    });
+    );
   }
   res.send("invalid user");
 });
