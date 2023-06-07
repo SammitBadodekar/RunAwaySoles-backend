@@ -129,7 +129,7 @@ const transporter = nodemailer.createTransport({
 });
 
 app.get("/ordersuccess", async (req, res) => {
-  const userId = req.cookies.userId;
+  const userId = req.cookies?.userId;
   console.log(userId);
   if (userId) {
     const user = await UserModel.find({ uid: userId });
