@@ -3,11 +3,10 @@ const app = express();
 const port = process.env.PORT || 3000;
 const mongoose = require("mongoose");
 const UserModel = require("./models/users");
-const ShoesDataModel = require("./models/shoesData");
+const nodemailer = require("nodemailer");
 const cors = require("cors");
 const shoesRouter = require("./routes/getShoes");
 const authentication = require("./routes/authentication");
-const { session } = require("passport");
 const stripe = require("stripe")(process.env.STRIPE_PRIVATE_KEY);
 
 app.use(express.json());
@@ -119,4 +118,34 @@ app.put("/users/:id/updateOrders", async (req, res) => {
   await UserModel.updateOne(filter, update);
 
   res.send(userId);
+});
+
+const transporter = nodemailer.createTransport({
+  service: "hotmail",
+  auth: {
+    user: "run-away-soles@outlook.com",
+    pass: process.env.NODEMAILER_EMAIL_PASSWORD,
+  },
+});
+
+app.get("/ordersuccess", async (req, res) => {
+  const userId = req.cookies.userId;
+  console.log(userId);
+  if (userId) {
+    const user = await UserModel.find({ uid: userId });
+    const options = {
+      from: "run-away-soles@outlook.com",
+      to: `${user.email}`,
+      subject: "Order Successful",
+      text: `Haha , you thought you will get real shoes LOL!!!`,
+    };
+    transporter.sendMail(options, (error, res) => {
+      if (error) {
+        console.log(error);
+      }
+      console.log("sent mail");
+      res.send(userId);
+    });
+  }
+  res.send("invalid user");
 });

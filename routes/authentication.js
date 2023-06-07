@@ -1,7 +1,4 @@
 const express = require("express");
-const cookieSession = require("cookie-session");
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const router = express.Router();
 const User = require("../models/users");
 require("dotenv").config();
