@@ -15,7 +15,7 @@ mongoose.connect(
 );
 app.use(
   cors({
-    origin: "https://run-away-soles.vercel.app",
+    origin: ["https://run-away-soles.vercel.app","http://localhost:3000"],
     methods: "GET,PUT,POST,DELETE",
     credentials: true,
   })
